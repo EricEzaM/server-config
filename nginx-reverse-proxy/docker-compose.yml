@@ -16,7 +16,7 @@ services:
 
   certbot:
     build: ./certbot
-    command: certonly -v --dns-linode --dns-linode-credentials /root/.secrets/certbot/linode.ini --dns-linode-propagation-seconds 60 --cert-name iameric.net -d site1.iameric.net,site2.iameric.net --email eric.michaels@bigpond.com,itsjusteza@gmail.com --rsa-key-size 4096 --agree-tos --keep-until-expiring
+    command: certonly -d site1.iameric.net,site2.iameric.net -v --dns-linode --dns-linode-credentials /root/.secrets/certbot/linode.ini --dns-linode-propagation-seconds 60 --cert-name iameric.net --email eric.michaels@bigpond.com,itsjusteza@gmail.com --rsa-key-size 4096 --agree-tos --keep-until-expiring
     restart: on-failure
     volumes:
       - certbot-etc:/etc/letsencrypt
