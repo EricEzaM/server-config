@@ -5,7 +5,7 @@ services:
     build: ./
     networks:
       - site1
-      - site2
+      - opendesk
     ports:
       - 80:80
       - 443:443
@@ -16,14 +16,19 @@ services:
 
   certbot:
     build: ./certbot
-    command: certonly -d site1.iameric.net,site2.iameric.net -v --dns-linode --dns-linode-credentials /root/.secrets/certbot/linode.ini --dns-linode-propagation-seconds 60 --cert-name iameric.net --email eric.michaels@bigpond.com,itsjusteza@gmail.com --rsa-key-size 4096 --agree-tos --keep-until-expiring
+    command: certonly -d site1.iameric.net,opendesk.iameric.net -v --dns-linode
+      --dns-linode-credentials /root/.secrets/certbot/linode.ini
+      --dns-linode-propagation-seconds 60 --cert-name iameric.net --email
+      eric.michaels@bigpond.com,itsjusteza@gmail.com --rsa-key-size 4096
+      --agree-tos --keep-until-expiring
     restart: on-failure
     volumes:
       - certbot-etc:/etc/letsencrypt
 
   certbot-auto-renew:
     build: ./certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h &
+      wait $${!}; done;'"
     restart: on-failure
     volumes:
       - certbot-etc:/etc/letsencrypt
@@ -31,11 +36,12 @@ services:
 volumes:
   certbot-etc:
 
+    null
 networks:
   # These match the folder names of the other docker-compose files for the apps.
   site1:
     external: true
     name: site1_default
-  site2:
+  opendesk:
     external: true
-    name: site2_default
+    name: opendesk_default
