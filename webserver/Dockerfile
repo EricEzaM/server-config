@@ -14,6 +14,6 @@ RUN curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/cer
 
 FROM nginx-with-ssl-configs as nginx-with-ssl-and-configuration
 
-COPY ./*.conf /etc/nginx/conf.d/
+COPY ./nginx_config/*.conf /etc/nginx/conf.d/
 COPY ./includes/ /etc/nginx/includes/
 COPY ./backend-not-found.html /var/www/html/backend-not-found.html
