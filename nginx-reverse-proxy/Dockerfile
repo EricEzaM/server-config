@@ -12,7 +12,7 @@ RUN mkdir /etc/letsencrypt
 RUN curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > /etc/letsencrypt/options-ssl-nginx.conf
 RUN curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem > /etc/letsencrypt/ssl-dhparams.pem
 
-FROM nginx-with-ssl-configs
+FROM nginx-with-ssl-configs as nginx-with-ssl-and-configuration
 
 COPY ./*.conf /etc/nginx/conf.d/
 COPY ./includes/ /etc/nginx/includes/

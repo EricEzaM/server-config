@@ -1,0 +1,1 @@
+(crontab -l; echo "0 23 * * * /cert-renew.sh") | crontab -

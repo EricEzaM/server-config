@@ -2,10 +2,12 @@ version: "3"
 
 services:
   nginx:
+    container_name: nginx
     build: ./
     networks:
       - site1
       - opendesk
+      - wikijs
     ports:
       - 80:80
       - 443:443
@@ -14,29 +16,40 @@ services:
     # Always restart to keep trying to find certbot keys (will fail a few times while certbot is running for the first time)
     restart: always
 
+  # Container to run on compose up which will initially create the certificates.
   certbot:
+    container_name: certbot
     build: ./certbot
-    command: certonly -d site1.iameric.net,opendesk.iameric.net -v --dns-linode
+    # See https://eff-certbot.readthedocs.io/en/stable/using.html#certbot-commands
+    command: certonly 
+      -v
+      --non-interactive
+      --agree-tos
+      --keep-until-expiring
+      --dns-linode
+      --cert-name iameric.net
+      --email itsjusteza@gmail.com
+      --domains iameric.net,site1.iameric.net,opendesk.iameric.net,wiki.iameric.net
       --dns-linode-credentials /root/.secrets/certbot/linode.ini
-      --dns-linode-propagation-seconds 60 --cert-name iameric.net --email
-      eric.michaels@bigpond.com,itsjusteza@gmail.com --rsa-key-size 4096
-      --agree-tos --keep-until-expiring
+      --dns-linode-propagation-seconds 60
+      --rsa-key-size 4096
     restart: on-failure
     volumes:
       - certbot-etc:/etc/letsencrypt
 
-  certbot-auto-renew:
+  # Container to be called through cron via docker 
+  certbot-renew:
+    container_name: certbot-renew
     build: ./certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h &
-      wait $${!}; done;'"
+    entrypoint: certbot renew
     restart: on-failure
     volumes:
       - certbot-etc:/etc/letsencrypt
 
 volumes:
   certbot-etc:
-
     null
+
 networks:
   # These match the folder names of the other docker-compose files for the apps.
   site1:
@@ -45,3 +58,6 @@ networks:
   opendesk:
     external: true
     name: opendesk_default
+  wikijs:
+    external: true
+    name: wikijs_default

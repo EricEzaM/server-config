@@ -1,0 +1,1 @@
+Copy cert-renew.sh and crontab-setup.sh to server. Run crontab-setup.
